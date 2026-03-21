@@ -1,0 +1,90 @@
+{
+    "pentagrama_ru": {
+        "levels": {
+            "HEM6-2HEN6+HEQ6::3": {
+                "parentId": 1342,
+                "tpId": 1344,
+                "slId": 1343,
+                "status": "MONITOR_ENTRY",
+                "config": {
+                    "id": 3,
+                    "action": "SELL",
+                    "qty": 1,
+                    "price": -2,
+                    "tp_price": -2.4,
+                    "sl_price": 2
+                }
+            },
+            "HEM6-2HEN6+HEQ6::4": {
+                "parentId": 1345,
+                "tpId": 1347,
+                "slId": 1346,
+                "status": "MONITOR_ENTRY",
+                "config": {
+                    "id": 4,
+                    "action": "BUY",
+                    "qty": 1,
+                    "price": -2.5,
+                    "tp_price": -2.1,
+                    "sl_price": -6
+                }
+            },
+            "HEM6-2HEN6+HEQ6::5": {
+                "parentId": 1348,
+                "tpId": 1350,
+                "slId": 1349,
+                "status": "MONITOR_ENTRY",
+                "config": {
+                    "id": 5,
+                    "action": "BUY",
+                    "qty": 1,
+                    "price": -3,
+                    "tp_price": -2.6,
+                    "sl_price": -6
+                }
+            },
+            "HEM6-2HEN6+HEQ6::6": {
+                "parentId": 1351,
+                "tpId": 1353,
+                "slId": 1352,
+                "status": "MONITOR_ENTRY",
+                "config": {
+                    "id": 6,
+                    "action": "BUY",
+                    "qty": 1,
+                    "price": -3.5,
+                    "tp_price": -3.1,
+                    "sl_price": -6
+                }
+            },
+            "HEM6-2HEN6+HEQ6::1": {
+                "parentId": 1354,
+                "tpId": 1356,
+                "slId": 1355,
+                "status": "MONITOR_ENTRY",
+                "config": {
+                    "id": 1,
+                    "action": "SELL",
+                    "qty": 1,
+                    "price": -1,
+                    "tp_price": -1.4,
+                    "sl_price": 2
+                }
+            },
+            "HEM6-2HEN6+HEQ6::2": {
+                "parentId": 1357,
+                "tpId": 1359,
+                "slId": 1358,
+                "status": "MONITOR_ENTRY",
+                "config": {
+                    "id": 2,
+                    "action": "SELL",
+                    "qty": 1,
+                    "price": -1.5,
+                    "tp_price": -1.9,
+                    "sl_price": 2
+                }
+            }
+        }
+    }
+}
