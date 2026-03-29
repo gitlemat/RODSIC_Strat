@@ -5,8 +5,9 @@ import logging
 logger = logging.getLogger("PositionTracker")
 
 class PositionTracker:
-    def __init__(self, symbol: str):
+    def __init__(self, symbol: str, multiplier: float = 1.0):
         self.symbol = symbol
+        self.multiplier = multiplier
         self.net_position = 0.0
         self.avg_cost = 0.0
         self.realized_pnl = 0.0
@@ -59,9 +60,9 @@ class PositionTracker:
                 # If Closing Short: PnL = (match_price - price) * filled_qty
                 
                 if self.net_position > 0: # Closing Long
-                    pnl = (price - match_price) * filled_qty
+                    pnl = (price - match_price) * filled_qty * self.multiplier
                 else: # Closing Short
-                    pnl = (match_price - price) * filled_qty
+                    pnl = (match_price - price) * filled_qty * self.multiplier
                     
                 self.realized_pnl += pnl
                 

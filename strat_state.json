@@ -5,7 +5,7 @@
                 "parentId": 1342,
                 "tpId": 1344,
                 "slId": 1343,
-                "status": "MONITOR_ENTRY",
+                "status": "ERROR_MISSING_ORDERS",
                 "config": {
                     "id": 3,
                     "action": "SELL",
@@ -19,7 +19,7 @@
                 "parentId": 1345,
                 "tpId": 1347,
                 "slId": 1346,
-                "status": "MONITOR_ENTRY",
+                "status": "ERROR_MISSING_ORDERS",
                 "config": {
                     "id": 4,
                     "action": "BUY",
@@ -33,7 +33,7 @@
                 "parentId": 1348,
                 "tpId": 1350,
                 "slId": 1349,
-                "status": "MONITOR_ENTRY",
+                "status": "ERROR_MISSING_ORDERS",
                 "config": {
                     "id": 5,
                     "action": "BUY",
@@ -47,7 +47,7 @@
                 "parentId": 1351,
                 "tpId": 1353,
                 "slId": 1352,
-                "status": "MONITOR_ENTRY",
+                "status": "ERROR_MISSING_ORDERS",
                 "config": {
                     "id": 6,
                     "action": "BUY",
@@ -61,7 +61,7 @@
                 "parentId": 1354,
                 "tpId": 1356,
                 "slId": 1355,
-                "status": "MONITOR_ENTRY",
+                "status": "ERROR_MISSING_ORDERS",
                 "config": {
                     "id": 1,
                     "action": "SELL",
@@ -75,7 +75,7 @@
                 "parentId": 1357,
                 "tpId": 1359,
                 "slId": 1358,
-                "status": "MONITOR_ENTRY",
+                "status": "ERROR_MISSING_ORDERS",
                 "config": {
                     "id": 2,
                     "action": "SELL",

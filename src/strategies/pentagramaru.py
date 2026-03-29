@@ -270,7 +270,9 @@ class PentagramaRu(BaseStrategy):
         if symbol:
             logger.info(f"[{symbol}] EXECUTION: {exec_data.get('side')} {exec_data.get('quantity')} @ {exec_data.get('fillPrice')} (Order: {order_id})")
             if symbol not in self.trackers:
-                self.trackers[symbol] = PositionTracker(symbol)
+                c_info = await self.connector.get_contract_info(symbol)
+                multiplier = c_info.get('multiplier', 1.0) if c_info else 1.0
+                self.trackers[symbol] = PositionTracker(symbol, multiplier=multiplier)
             
             self.trackers[symbol].add_execution(
                 side=exec_data.get('side'),
@@ -290,7 +292,9 @@ class PentagramaRu(BaseStrategy):
             if not symbol: continue
             
             if symbol not in self.trackers:
-                self.trackers[symbol] = PositionTracker(symbol)
+                c_info = await self.connector.get_contract_info(symbol)
+                multiplier = c_info.get('multiplier', 1.0) if c_info else 1.0
+                self.trackers[symbol] = PositionTracker(symbol, multiplier=multiplier)
                 
             qty = float(exec_data.get('qty', 0))
             price = float(exec_data.get('price', 0))
@@ -467,7 +471,9 @@ class PentagramaRu(BaseStrategy):
             # Inject synthetic fill for Parent
             price = float(level_cfg['price'])
             if symbol not in self.trackers:
-                self.trackers[symbol] = PositionTracker(symbol)
+                c_info = await self.connector.get_contract_info(symbol)
+                multiplier = c_info.get('multiplier', 1.0) if c_info else 1.0
+                self.trackers[symbol] = PositionTracker(symbol, multiplier=multiplier)
                 
             self.trackers[symbol].add_execution(side=action, qty=qty, price=price)
             logger.info(f"[{symbol}] Level {lid}: Manual ASSUME EXECUTED for PARENT. Injected synthetic fill ({action} {qty} @ {price}). Status -> MONITOR_EXIT.")
@@ -484,7 +490,9 @@ class PentagramaRu(BaseStrategy):
             price = float(level_cfg['tp_price']) if order_type == 'TP' else float(level_cfg['sl_price'])
             
             if symbol not in self.trackers:
-                self.trackers[symbol] = PositionTracker(symbol)
+                c_info = await self.connector.get_contract_info(symbol)
+                multiplier = c_info.get('multiplier', 1.0) if c_info else 1.0
+                self.trackers[symbol] = PositionTracker(symbol, multiplier=multiplier)
                 
             self.trackers[symbol].add_execution(side=child_action, qty=qty, price=price)
             logger.info(f"[{symbol}] Level {lid}: Manual ASSUME EXECUTED for {order_type}. Injected synthetic fill ({child_action} {qty} @ {price}).")

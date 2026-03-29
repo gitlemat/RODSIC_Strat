@@ -165,3 +165,16 @@ class IBConnector:
         except Exception as e:
             logger.error(f"Failed to get executions: {e}")
             return []
+
+    async def get_contract_info(self, symbol: str) -> Optional[Dict]:
+        """
+        Fetches contract details from IB_Core.
+        """
+        try:
+            url = f"{self.rest_url}/Contract/{symbol}"
+            response = await asyncio.to_thread(requests.get, url, timeout=5)
+            response.raise_for_status()
+            return response.json()
+        except Exception as e:
+            logger.error(f"Failed to get contract info for {symbol}: {e}")
+            return None
