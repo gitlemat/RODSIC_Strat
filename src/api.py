@@ -241,8 +241,8 @@ async def manual_fix_level(strat_name: str, symbol: str, lid: str):
         if strat.name == strat_name:
             if hasattr(strat, 'manual_fix_level'):
                 try:
-                    # Let the strategy handle the recovery logic
-                    asyncio.create_task(strat.manual_fix_level(symbol, lid))
+                    # Let the strategy handle the recovery logic (Wait for completion)
+                    await strat.manual_fix_level(symbol, lid)
                     return {"status": "success", "message": f"Manual fix triggered for {symbol} level {lid}"}
                 except Exception as e:
                     logger.error(f"Error triggering manual fix: {e}")
@@ -262,7 +262,8 @@ async def assume_executed_level(strat_name: str, symbol: str, lid: str, req: Ass
         if strat.name == strat_name:
             if hasattr(strat, 'assume_order_executed'):
                 try:
-                    await asyncio.create_task(strat.assume_order_executed(symbol, lid, req.order_type))
+                    # Wait for execution injection to finish
+                    await strat.assume_order_executed(symbol, lid, req.order_type)
                     return {"status": "success", "message": f"Assumed {req.order_type} executed for {symbol} level {lid}"}
                 except ValueError as ve:
                     raise HTTPException(status_code=400, detail=str(ve))

@@ -149,6 +149,7 @@ class PentagramaRu(BaseStrategy):
 
     async def _cancel_and_reset_level(self, symbol: str, lid: str, cid: str, state: dict):
         """Cancels remaining active orders for a level and resets it."""
+        logger.info(f"[{symbol}] Manual Fix: Starting cancellation for Level {lid}")
         for key in ['parentId', 'tpId', 'slId']:
             oid = state.get(key)
             if oid:
@@ -159,6 +160,7 @@ class PentagramaRu(BaseStrategy):
                     logger.error(f"[{symbol}] Failed to cancel {oid}: {e}")
         
         await asyncio.sleep(1) # Yield time for cancellations to process
+        logger.info(f"[{symbol}] Manual Fix: Cancellations finished, proceeding to reset Level {lid}")
         await self._reset_level(symbol, lid, cid)
 
     def _persist(self):
@@ -201,6 +203,10 @@ class PentagramaRu(BaseStrategy):
             await self._handle_child_update(symbol, lid, cid, current_state, contract_cfg, order_type, order_id, status, filled, remaining)
 
     async def _handle_parent_update(self, symbol: str, lid: str, cid: str, current_state: dict, contract_cfg: dict, order_id: Any, status: str, filled: float, remaining: float):
+        # Ignore broker feedback (intentional cancellations) while the fix is in progress
+        if current_state.get('status') == 'FIXING':
+            return
+            
         if str(current_state.get('parentId')) != str(order_id):
             logger.debug(f"[{symbol}] Ignoring update for old PARENT {order_id} (active is {current_state.get('parentId')})")
             return
@@ -221,6 +227,10 @@ class PentagramaRu(BaseStrategy):
                      self._persist()
 
     async def _handle_child_update(self, symbol: str, lid: str, cid: str, current_state: dict, contract_cfg: dict, order_type: str, order_id: Any, status: str, filled: float, remaining: float):
+        # Ignore broker feedback (intentional cancellations) while the fix is in progress
+        if current_state.get('status') == 'FIXING':
+            return
+            
         active_id = current_state.get('tpId') if order_type == 'TP' else current_state.get('slId')
         if str(active_id) != str(order_id):
             logger.debug(f"[{symbol}] Ignoring update for old {order_type} {order_id} (active is {active_id})")
@@ -334,40 +344,64 @@ class PentagramaRu(BaseStrategy):
             "orderRef": self.name # Tag with Strategy Name
         }
         
-        order_ids = await asyncio.to_thread(self.connector.place_bracket_order, bracket_payload)
-        
-        parent_id = order_ids.get("Parent")
-        sl_id = order_ids.get("SL")
-        tp_id = order_ids.get("TP")
-        
-        if parent_id and sl_id and tp_id:
-            logger.info(f"[{symbol}] Placed Level {lid}. ParentId: {parent_id}, SL: {sl_id}, TP: {tp_id}")
+        logger.info(f"[{symbol}] Attempting to place new bracket for Level {lid}...")
+        try:
+            order_ids = await asyncio.to_thread(self.connector.place_bracket_order, bracket_payload)
             
-            # Map logical roles to actual broker Order IDs
-            self.runtime_state[cid] = {
-                'parentId': parent_id,
-                'tpId': tp_id,
-                'slId': sl_id,
-                'status': 'MONITOR_ENTRY',
-                'config': level
-            }
+            parent_id = order_ids.get("Parent")
+            sl_id = order_ids.get("SL")
+            tp_id = order_ids.get("TP")
             
-            self.order_map[parent_id] = {'composite_id': cid, 'type': 'PARENT'}
-            self.order_map[sl_id] = {'composite_id': cid, 'type': 'SL'}
-            self.order_map[tp_id] = {'composite_id': cid, 'type': 'TP'}
-        else:
-            logger.error(f"[{symbol}] Failed to place bracket Level {lid}")
+            if parent_id and sl_id and tp_id:
+                logger.info(f"[{symbol}] Placed Level {lid}. ParentId: {parent_id}, SL: {sl_id}, TP: {tp_id}")
+                
+                # Map logical roles to actual broker Order IDs
+                self.runtime_state[cid] = {
+                    'parentId': parent_id,
+                    'tpId': tp_id,
+                    'slId': sl_id,
+                    'status': 'MONITOR_ENTRY',
+                    'config': level
+                }
+                
+                self.order_map[parent_id] = {'composite_id': cid, 'type': 'PARENT'}
+                self.order_map[sl_id] = {'composite_id': cid, 'type': 'SL'}
+                self.order_map[tp_id] = {'composite_id': cid, 'type': 'TP'}
+                return True
+            else:
+                logger.error(f"[{symbol}] Failed to place bracket Level {lid}. Received truncated IDs: {order_ids}")
+                return False
+        except Exception as e:
+            logger.error(f"[{symbol}] Exception during bracket placement for Level {lid}: {e}")
+            return False
 
     async def _reset_level(self, symbol: str, lid: str, cid: str):
-        if cid in self.runtime_state:
-            del self.runtime_state[cid]
+        """Finds configuration for a level and re-places orders."""
+        # Normalize symbol for robust matching (Stripping and Case-Insensitivity)
+        search_symbol = symbol.strip().upper()
         
-        contract_cfg = next((c for c in self.contracts if c['symbol'] == symbol), None)
-        if contract_cfg:
-            level_cfg = next((l for l in contract_cfg['levels'] if str(l['id']) == lid), None)
-            if level_cfg:
-                await self._place_level(contract_cfg, level_cfg, cid)
-                self._persist()
+        # 1. FIND CONFIG FIRST: Match symbol case-insensitively
+        contract_cfg = next((c for c in self.contracts if c.get('symbol', '').strip().upper() == search_symbol), None)
+        
+        if not contract_cfg:
+            logger.error(f"[{symbol}] Manual Fix Failed: Contract not found in ACTIVE contracts list. Check if strategy row is toggled 'Enabled'.")
+            return
+            
+        level_cfg = next((l for l in contract_cfg.get('levels', []) if str(l.get('id')) == lid), None)
+        if not level_cfg:
+            logger.error(f"[{symbol}] Manual Fix Failed: Config for Level {lid} not found in YAML.")
+            return
+
+        # ATTEMPT RE-PLACEMENT FIRST
+        # If successful, _place_level will overwrite the entry in self.runtime_state[cid]
+        logger.info(f"[{symbol}] Attempting re-placement for Level {lid}...")
+        success = await self._place_level(contract_cfg, level_cfg, cid)
+        
+        if success:
+            logger.info(f"[{symbol}] Level {lid} successfully reset and re-placed.")
+            self._persist()
+        else:
+            logger.error(f"[{symbol}] Level {lid} reset FAILED to place new bracket orders. Current state preserved.")
 
     async def on_auto_recreate_changed(self, symbol: str, auto_recreate: bool):
         logger.info(f"[{self.name}] auto_recreate changed for {symbol} to {auto_recreate}")
@@ -435,8 +469,11 @@ class PentagramaRu(BaseStrategy):
         if cid not in self.runtime_state:
             raise ValueError(f"Level {lid} for {symbol} not found in active runtime_state.")
             
-        logger.info(f"[{self.name}] Manual fix requested for {symbol} Level {lid}")
+        logger.info(f"[{self.name}] Manual fix requested for {symbol} Level {lid}. Setting status to FIXING.")
+        
         current_state = self.runtime_state[cid]
+        # Set transitional status for UX (Survives page reload)
+        current_state['status'] = "FIXING"
         
         # It's safest to cancel any dangling children and reset
         await self._cancel_and_reset_level(symbol, lid, cid, current_state)

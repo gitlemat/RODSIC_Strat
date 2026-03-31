@@ -2,10 +2,10 @@
     "pentagrama_ru": {
         "levels": {
             "HEM6-2HEN6+HEQ6::3": {
-                "parentId": 1342,
-                "tpId": 1344,
-                "slId": 1343,
-                "status": "ERROR_MISSING_ORDERS",
+                "parentId": 1366,
+                "tpId": 1367,
+                "slId": 1368,
+                "status": "MONITOR_ENTRY",
                 "config": {
                     "id": 3,
                     "action": "SELL",
@@ -16,10 +16,10 @@
                 }
             },
             "HEM6-2HEN6+HEQ6::4": {
-                "parentId": 1345,
-                "tpId": 1347,
-                "slId": 1346,
-                "status": "ERROR_MISSING_ORDERS",
+                "parentId": 1369,
+                "tpId": 1370,
+                "slId": 1371,
+                "status": "MONITOR_ENTRY",
                 "config": {
                     "id": 4,
                     "action": "BUY",
@@ -30,10 +30,10 @@
                 }
             },
             "HEM6-2HEN6+HEQ6::5": {
-                "parentId": 1348,
-                "tpId": 1350,
-                "slId": 1349,
-                "status": "ERROR_MISSING_ORDERS",
+                "parentId": 1372,
+                "tpId": 1373,
+                "slId": 1374,
+                "status": "MONITOR_ENTRY",
                 "config": {
                     "id": 5,
                     "action": "BUY",
@@ -44,10 +44,10 @@
                 }
             },
             "HEM6-2HEN6+HEQ6::6": {
-                "parentId": 1351,
-                "tpId": 1353,
-                "slId": 1352,
-                "status": "ERROR_MISSING_ORDERS",
+                "parentId": 1375,
+                "tpId": 1376,
+                "slId": 1377,
+                "status": "MONITOR_ENTRY",
                 "config": {
                     "id": 6,
                     "action": "BUY",
@@ -57,31 +57,31 @@
                     "sl_price": -6
                 }
             },
-            "HEM6-2HEN6+HEQ6::1": {
-                "parentId": 1354,
-                "tpId": 1356,
-                "slId": 1355,
-                "status": "ERROR_MISSING_ORDERS",
-                "config": {
-                    "id": 1,
-                    "action": "SELL",
-                    "qty": 1,
-                    "price": -1,
-                    "tp_price": -1.4,
-                    "sl_price": 2
-                }
-            },
             "HEM6-2HEN6+HEQ6::2": {
-                "parentId": 1357,
-                "tpId": 1359,
-                "slId": 1358,
-                "status": "ERROR_MISSING_ORDERS",
+                "parentId": 1363,
+                "tpId": 1364,
+                "slId": 1365,
+                "status": "MONITOR_ENTRY",
                 "config": {
                     "id": 2,
                     "action": "SELL",
                     "qty": 1,
                     "price": -1.5,
                     "tp_price": -1.9,
+                    "sl_price": 2
+                }
+            },
+            "HEM6-2HEN6+HEQ6::1": {
+                "parentId": 1360,
+                "tpId": 1361,
+                "slId": 1362,
+                "status": "MONITOR_ENTRY",
+                "config": {
+                    "id": 1,
+                    "action": "SELL",
+                    "qty": 1,
+                    "price": -1,
+                    "tp_price": -1.4,
                     "sl_price": 2
                 }
             }
