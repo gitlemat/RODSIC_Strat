@@ -10,3 +10,6 @@ env.bak/
 venv.bak/
 .DS_Store
 *.log
+strategies.yaml
+strat_state.json
+

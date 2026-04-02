@@ -1,0 +1,47 @@
+strategies:
+  # Strategy Name (matches Class Logic)
+  pentagrama_ru:
+    enabled: true
+    contracts:
+      # Example: Butterfly (Multileg inferred by IB_Core)
+    - symbol: "HEM6-2HEN6+HEQ6"
+      enabled: true
+      levels:
+      - id: 1
+        action: "SELL"
+        qty: 1
+        price: -1
+        tp_price: -1.4
+        sl_price: 2
+      - id: 2
+        action: "SELL"
+        qty: 1
+        price: -1.5
+        tp_price: -1.9
+        sl_price: 2
+      - id: 3
+        action: "SELL"
+        qty: 1
+        price: -2
+        tp_price: -2.4
+        sl_price: 2
+      - id: 4
+        action: "BUY"
+        qty: 1
+        price: -2.5
+        tp_price: -2.1
+        sl_price: -6
+      - id: 5
+        action: "BUY"
+        qty: 1
+        price: -3
+        tp_price: -2.6
+        sl_price: -6
+      - id: 6
+        action: "BUY"
+        qty: 1
+        price: -3.5
+        tp_price: -3.1
+        sl_price: -6
+      auto_recreate: true
+      auto_fix: false
